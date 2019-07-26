@@ -2,6 +2,10 @@ from kivy.uix.textinput import TextInput
 import re
 
 class FloatInput(TextInput):
+	def __init__(self, *args, **kwargs):
+		kwargs["multiline"] = False
+		super().__init__(*args, **kwargs)
+
 	ptn = re.compile('[^0-9]')
 	def insert_text(self, substring, from_undo=False):
 		if '.' in self.text:

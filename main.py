@@ -10,6 +10,5 @@ class TestApp(App):
 		self.mainLayout = MainLayout()
 		return self.mainLayout
 
-
 if __name__ == "__main__":
 	TestApp().run()
