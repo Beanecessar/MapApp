@@ -2,6 +2,7 @@ import osmnx as ox
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 from matplotlib.figure import Figure
 import pickle
+import networkx as nx
 
 def TouchPairID(touch1, touch2):
 	if touch1.uid < touch2.uid:
@@ -16,6 +17,14 @@ class GraphCanvas(FigureCanvasKivyAgg):
 		self.touchCenter = [0, 0]
 		self.touchDistMap = {}
 		self.zoomCoeff = 1
+		self.highwayWeight = {
+			0:{'motorway':1,'trunk':0.7,'primary':0.4,'secondary':0,'tertiary':-0.4,'unclassified':-0.7,'residential':-1},
+			1:{'motorway':-1,'trunk':-0.7,'primary':-0.4,'secondary':0,'tertiary':0.4,'unclassified':0.7,'residential':1},
+			2:{'motorway':1,'trunk':0,'primary':-0.5,'secondary':-1,'tertiary':-0.5,'unclassified':0,'residential':1},
+			3:{'motorway':0.5,'trunk':0,'primary':-1,'secondary':-0.8,'tertiary':-0.6,'unclassified':0,'residential':0.5},
+			4:{'motorway':1,'trunk':0.5,'primary':-0.3,'secondary':-0.5,'tertiary':-1,'unclassified':-1,'residential':0}
+		}
+		self.maxspeedWeight = {0:0.02, 1:-0.02}
 		try:
 			with open("graph.data", "rb") as f:
 				self.G = pickle.load(f)
@@ -27,14 +36,6 @@ class GraphCanvas(FigureCanvasKivyAgg):
 
 	def calculateWeight(self):
 		weigetDict = {}
-		highwayWeight = {
-			0:{'motorway':1,'trunk':0.7,'primary':0.4,'secondary':0,'tertiary':-0.4,'unclassified':-0.7,'residential':-1},
-			1:{'motorway':-1,'trunk':-0.7,'primary':-0.4,'secondary':0,'tertiary':0.4,'unclassified':0.7,'residential':1},
-			2:{'motorway':1,'trunk':0,'primary':-0.5,'secondary':-1,'tertiary':-0.5,'unclassified':0,'residential':1},
-			3:{'motorway':0.5,'trunk':0,'primary':-1,'secondary':-0.8,'tertiary':-0.6,'unclassified':0,'residential':0.5},
-			4:{'motorway':1,'trunk':0.5,'primary':-0.3,'secondary':-0.5,'tertiary':-1,'unclassified':-1,'residential':0}
-		}
-		maxspeedWeight = {0:0.02, 1:-0.02}
 		for i in range(0,5):
 			for j in range(0,2):
 				for edge in self.G.edges():
@@ -59,7 +60,7 @@ class GraphCanvas(FigureCanvasKivyAgg):
 					weigetDict[(u, v, 0)] =  length*(1 + maxspeed + highway)
 				nx.set_edge_attributes(G, weigetDict, 'type%d'%(j*5+i))
 
-	def calculateRoutes(frm, to):
+	def calculateRoutes(self,frm, to):
 		if isinstance(frm, tuple) and isinstance(to, tuple) :
 			fromNode = ox.get_nearest_node(self.G, frm)
 			print("GraphCanvas: From nearest node {}.".format(fromNode))
@@ -73,7 +74,7 @@ class GraphCanvas(FigureCanvasKivyAgg):
 	def drawRoutes(self, routes, color):
 		"""
 		"""
-		self.figure, self.ax = ox.plot_graph_route(self.G, routes, show=False, close=True, route_color=color)
+		self.figure, self.ax = ox.plot_graph_routes(self.G, routes, show=False, close=True, route_color=color)
 		self.draw_idle()
 
 	def updateDistMap(self, touch):
@@ -156,3 +157,18 @@ class GraphCanvas(FigureCanvasKivyAgg):
 		if self.collide_point(*touch.pos):
 			print("GraphCanvas: on_touch_up at position: {}, {}".format(*touch.pos))
 		super().on_touch_up(touch)
+		
+	def userBehavior(self,type_num):
+		if typeNum <= 4:
+			highwayNum = typyNum
+			maxspeedNum = 0
+		else:
+			highwayNum = typyNum%5
+			maxspeedNum = 1
+		with open('data.csv','a+', newline='') as f:
+			csv_write = csv.writer(f)
+			line = []
+			for k, v in highwayWeight[highwayNum].items():
+				line.append(v)
+			line.append(maxspeedWeight[maxspeedNum])
+		sv_write.writerow(line)
