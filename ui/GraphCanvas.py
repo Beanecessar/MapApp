@@ -2,6 +2,7 @@ import osmnx as ox
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 from matplotlib.figure import Figure
 import pickle
+import networkx as nx
 
 def TouchPairID(touch1, touch2):
 	if touch1.uid < touch2.uid:
@@ -59,7 +60,7 @@ class GraphCanvas(FigureCanvasKivyAgg):
 					weigetDict[(u, v, 0)] =  length*(1 + maxspeed + highway)
 				nx.set_edge_attributes(G, weigetDict, 'type%d'%(j*5+i))
 
-	def calculateRoutes(frm, to):
+	def calculateRoutes(self,frm, to):
 		if isinstance(frm, tuple) and isinstance(to, tuple) :
 			fromNode = ox.get_nearest_node(self.G, frm)
 			toNode = ox.get_nearest_node(self.G, to)
@@ -71,7 +72,7 @@ class GraphCanvas(FigureCanvasKivyAgg):
 	def drawRoutes(self, routes, color):
 		"""
 		"""
-		self.figure, self.ax = ox.plot_graph_route(self.G, routes, show=False, close=True, route_color=color)
+		self.figure, self.ax = ox.plot_graph_routes(self.G, routes, show=False, close=True, route_color=color)
 		self.draw_idle()
 
 	def updateDistMap(self, touch):
