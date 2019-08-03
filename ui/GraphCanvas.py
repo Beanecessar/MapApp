@@ -169,4 +169,19 @@ class GraphCanvas(FigureCanvasKivyAgg):
 			for k, v in highwayWeight[highwayNum].items():
 				line.append(v)
 			line.append(maxspeedWeight[maxspeedNum])
-		sv_write.writerow(line)
+		csv_write.writerow(line)
+
+	def behavioralLearning(self):
+		with open('data.csv','r') as csvfile:
+			reader = csv.reader(csvfile)
+			data = [row for row in reader]
+			L = []
+
+			for i in range(0,8):
+				cols= [col[i] for col in data]
+				cols.remove(max(cols))
+				cols.remove(min(cols))
+				cols = list(map(float, cols))
+				avg = np.mean(cols)
+				L.append(avg)
+		return L
