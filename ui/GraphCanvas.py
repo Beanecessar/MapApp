@@ -193,19 +193,19 @@ class GraphCanvas(FigureCanvasKivyAgg):
 			print("GraphCanvas: on_touch_up at position: {}, {}".format(*touch.pos))
 		super().on_touch_up(touch)
 		
-	def userBehavior(self,type_num):
+	def userBehavior(self,typeNum):
 		if typeNum <= 4:
-			highwayNum = typyNum
+			highwayNum = typeNum
 			maxspeedNum = 0
 		else:
-			highwayNum = typyNum%5
+			highwayNum = typeNum%5
 			maxspeedNum = 1
 		with open('data.csv','a+', newline='') as f:
 			csv_write = csv.writer(f)
 			line = []
-			for k, v in highwayWeight[highwayNum].items():
+			for k, v in self.highwayWeight[highwayNum].items():
 				line.append(v)
-			line.append(maxspeedWeight[maxspeedNum])
+			line.append(self.maxspeedWeight[maxspeedNum])
 		csv_write.writerow(line)
 
 	def behavioralLearning(self):
