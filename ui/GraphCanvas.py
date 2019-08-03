@@ -24,19 +24,54 @@ class GraphCanvas(FigureCanvasKivyAgg):
 			with open("graph.data", "wb") as f:
 				pickle.dump(self.G, f)
 		self.figure, self.ax = ox.plot_graph(self.G, show=False, close=True)
-		self.routeColor = 'red'
-		self.routes = []
 
-	def addRoute(self, route):
+	def calculateWeight(self):
+		weigetDict = {}
+		highwayWeight = {
+			0:{'motorway':1,'trunk':0.7,'primary':0.4,'secondary':0,'tertiary':-0.4,'unclassified':-0.7,'residential':-1},
+			1:{'motorway':-1,'trunk':-0.7,'primary':-0.4,'secondary':0,'tertiary':0.4,'unclassified':0.7,'residential':1},
+			2:{'motorway':1,'trunk':0,'primary':-0.5,'secondary':-1,'tertiary':-0.5,'unclassified':0,'residential':1},
+			3:{'motorway':0.5,'trunk':0,'primary':-1,'secondary':-0.8,'tertiary':-0.6,'unclassified':0,'residential':0.5},
+			4:{'motorway':1,'trunk':0.5,'primary':-0.3,'secondary':-0.5,'tertiary':-1,'unclassified':-1,'residential':0}
+		}
+		maxspeedWeight = {0:0.02, 1:-0.02}
+		for i in range(0,5):
+			for j in range(0,2):
+				for edge in self.G.edges():
+					u, v = edge
+					d = ox.get_route_edge_attributes(self.G,[u,v],attribute = None,minimize_key ='length',retrieve_default = None)
+					length  = d[0]['length']
+					a = d[0]
+					if 'maxspeed' not in a:
+						d[0]['maxspeed'] = '50 mph'
+					ret  = re.findall(r'[0-9]+\.?[0-9]*',d[0]['maxspeed'])
+					if len(ret) == 0:
+						maxspeed = 50
+					else:
+						maxspeed = float(ret[0])     
+					if 'highway' not in a:
+						d[0]['highway'] = 'unknown'
+					if d[0]['highway'] in highwayWeight[i]:
+						highway = highwayWeight[i][d[0]['highway']]
+					else:
+						highway = 0
+					maxspeed = maxspeedWeight[j]*maxspeed_num
+					weigetDict[(u, v, 0)] =  length*(1 + maxspeed + highway)
+				nx.set_edge_attributes(G, weigetDict, 'type%d'%(j*5+i))
+
+	def calculateRoutes(frm, to):
+		if isinstance(frm, tuple) and isinstance(to, tuple) :
+			fromNode = ox.get_nearest_node(self.G, frm)
+			toNode = ox.get_nearest_node(self.G, to)
+			routes = []
+			for i in range(0, 9):
+				routes.append(nx.shortest_path(self.G, fromNode, toNode, weight='type%d'%(i)))
+			return routes
+
+	def drawRoutes(self, routes, color):
 		"""
 		"""
-		self.routes.append(route)
-		self.figure, self.ax = ox.plot_graph_route(self.G, self.routes, show=False, close=True, route_color=self.routeColor)
-		self.draw_idle()
-
-	def clearRoutes(self):
-		self.routes = []
-		self.figure, self.ax = ox.plot_graph(self.G, show=False, close=True)
+		self.figure, self.ax = ox.plot_graph_route(self.G, routes, show=False, close=True, route_color=color)
 		self.draw_idle()
 
 	def updateDistMap(self, touch):
