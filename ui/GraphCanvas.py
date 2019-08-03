@@ -62,7 +62,9 @@ class GraphCanvas(FigureCanvasKivyAgg):
 	def calculateRoutes(frm, to):
 		if isinstance(frm, tuple) and isinstance(to, tuple) :
 			fromNode = ox.get_nearest_node(self.G, frm)
+			print("GraphCanvas: From nearest node {}.".format(fromNode))
 			toNode = ox.get_nearest_node(self.G, to)
+			print("GraphCanvas: To nearest node {}.".format(toNode))
 			routes = []
 			for i in range(0, 9):
 				routes.append(nx.shortest_path(self.G, fromNode, toNode, weight='type%d'%(i)))

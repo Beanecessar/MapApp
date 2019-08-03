@@ -10,4 +10,5 @@ class GraphManager(object):
 	def drawRoute(frm, to):
 		routes = self.canvas.calculateRoute(frm, to)
 		if routes:
+			print("GraphManager: Find %d routes."%(len(routes)))
 			self.canvas.drawRoutes(routes, 'red')
