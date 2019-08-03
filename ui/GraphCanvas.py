@@ -17,6 +17,14 @@ class GraphCanvas(FigureCanvasKivyAgg):
 		self.touchCenter = [0, 0]
 		self.touchDistMap = {}
 		self.zoomCoeff = 1
+		self.highwayWeight = {
+			0:{'motorway':1,'trunk':0.7,'primary':0.4,'secondary':0,'tertiary':-0.4,'unclassified':-0.7,'residential':-1},
+			1:{'motorway':-1,'trunk':-0.7,'primary':-0.4,'secondary':0,'tertiary':0.4,'unclassified':0.7,'residential':1},
+			2:{'motorway':1,'trunk':0,'primary':-0.5,'secondary':-1,'tertiary':-0.5,'unclassified':0,'residential':1},
+			3:{'motorway':0.5,'trunk':0,'primary':-1,'secondary':-0.8,'tertiary':-0.6,'unclassified':0,'residential':0.5},
+			4:{'motorway':1,'trunk':0.5,'primary':-0.3,'secondary':-0.5,'tertiary':-1,'unclassified':-1,'residential':0}
+		}
+		self.maxspeedWeight = {0:0.02, 1:-0.02}
 		try:
 			with open("graph.data", "rb") as f:
 				self.G = pickle.load(f)
@@ -28,14 +36,6 @@ class GraphCanvas(FigureCanvasKivyAgg):
 
 	def calculateWeight(self):
 		weigetDict = {}
-		highwayWeight = {
-			0:{'motorway':1,'trunk':0.7,'primary':0.4,'secondary':0,'tertiary':-0.4,'unclassified':-0.7,'residential':-1},
-			1:{'motorway':-1,'trunk':-0.7,'primary':-0.4,'secondary':0,'tertiary':0.4,'unclassified':0.7,'residential':1},
-			2:{'motorway':1,'trunk':0,'primary':-0.5,'secondary':-1,'tertiary':-0.5,'unclassified':0,'residential':1},
-			3:{'motorway':0.5,'trunk':0,'primary':-1,'secondary':-0.8,'tertiary':-0.6,'unclassified':0,'residential':0.5},
-			4:{'motorway':1,'trunk':0.5,'primary':-0.3,'secondary':-0.5,'tertiary':-1,'unclassified':-1,'residential':0}
-		}
-		maxspeedWeight = {0:0.02, 1:-0.02}
 		for i in range(0,5):
 			for j in range(0,2):
 				for edge in self.G.edges():
@@ -155,3 +155,18 @@ class GraphCanvas(FigureCanvasKivyAgg):
 		if self.collide_point(*touch.pos):
 			print("GraphCanvas: on_touch_up at position: {}, {}".format(*touch.pos))
 		super().on_touch_up(touch)
+		
+	def userBehavior(self,type_num):
+		if typeNum <= 4:
+			highwayNum = typyNum
+			maxspeedNum = 0
+		else:
+			highwayNum = typyNum%5
+			maxspeedNum = 1
+		with open('data.csv','a+', newline='') as f:
+			csv_write = csv.writer(f)
+			line = []
+			for k, v in highwayWeight[highwayNum].items():
+				line.append(v)
+			line.append(maxspeedWeight[maxspeedNum])
+		sv_write.writerow(line)
