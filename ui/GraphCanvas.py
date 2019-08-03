@@ -1,9 +1,11 @@
 import osmnx as ox
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
+from kivy.core.window import Window
 from matplotlib.figure import Figure
 import pickle
 import networkx as nx
 import re
+import csv
 
 def TouchPairID(touch1, touch2):
 	if touch1.uid < touch2.uid:
@@ -59,7 +61,10 @@ class GraphCanvas(FigureCanvasKivyAgg):
 							if a['highway'] in self.highwayWeight[i]:
 								highway = self.highwayWeight[i][a['highway']]
 					maxspeed = self.maxspeedWeight[j]*maxspeedNum
-					weigetDict[(u, v, 0)] =  length*(1 + maxspeed*0.5 + highway*0.5)
+					weight = length*(1 + maxspeed*0.5 + highway*0.5)
+					if weight < 0:
+						weight = 0
+					weigetDict[(u, v, 0)] = weight
 				nx.set_edge_attributes(self.G, weigetDict, 'type%d'%(j*5+i))
 
 	@staticmethod
@@ -78,11 +83,11 @@ class GraphCanvas(FigureCanvasKivyAgg):
 
 	def calculateRoutes(self, frm, to):
 		if isinstance(frm, tuple) and isinstance(to, tuple):
-			center = self.GetCenter(frm, to)
-			#north, south, east, west = self.GetBBox(frm, to)
+			#center = self.GetCenter(frm, to)
+			north, south, east, west = self.GetBBox(frm, to)
 			try:
-				#self.G = ox.graph_from_bbox(north, south, east, west, truncate_by_edge=True)
-				self.G = ox.graph_from_point(center, truncate_by_edge=True)
+				self.G = ox.graph_from_bbox(north, south, east, west, truncate_by_edge=True)
+				#self.G = ox.graph_from_point(center, truncate_by_edge=True)
 			except Exception as e:
 				print("GraphCanvas: Error when get graph.\n%s"%(str(e)))
 				return []
@@ -97,20 +102,30 @@ class GraphCanvas(FigureCanvasKivyAgg):
 			return routes
 		return []
 
+	def refrashRect(self):
+		"""
+		Every time redraw the canvas, the viewport changes.
+		Don't know how to deal with it.
+		Use some ticky to refrash canvas.
+		"""
+		if Window.height <= 720:
+			Window.size = (480, 721)
+		elif Window.height >= 720:
+			Window.size = (480, 719)
+
 	def drawRoute(self, route, color):
 		"""
 		"""
 		self.figure, self.ax = ox.plot_graph_route(self.G, route, show=False, close=True, route_color=color)
-		self.draw_idle()
-		print(dir(self))
+		self.draw()
+		self.refrashRect()
 
 	def drawRoutes(self, routes, color):
 		"""
 		"""
 		self.figure, self.ax = ox.plot_graph_routes(self.G, routes, show=False, close=True, route_color=color)
-		self.draw_idle()
-		self.size = (self.width, self.height)
-		print(dir(self))
+		self.draw()
+		self.refrashRect()
 
 	def updateDistMap(self, touch):
 		for t in self.touches.values():
@@ -193,20 +208,20 @@ class GraphCanvas(FigureCanvasKivyAgg):
 			print("GraphCanvas: on_touch_up at position: {}, {}".format(*touch.pos))
 		super().on_touch_up(touch)
 		
-	def userBehavior(self,type_num):
+	def userBehavior(self, typeNum):
 		if typeNum <= 4:
-			highwayNum = typyNum
+			highwayNum = typeNum
 			maxspeedNum = 0
 		else:
-			highwayNum = typyNum%5
+			highwayNum = typeNum%5
 			maxspeedNum = 1
 		with open('data.csv','a+', newline='') as f:
 			csv_write = csv.writer(f)
 			line = []
-			for k, v in highwayWeight[highwayNum].items():
+			for k, v in self.highwayWeight[highwayNum].items():
 				line.append(v)
-			line.append(maxspeedWeight[maxspeedNum])
-		csv_write.writerow(line)
+			line.append(self.maxspeedWeight[maxspeedNum])
+			csv_write.writerow(line)
 
 	def behavioralLearning(self):
 		with open('data.csv','r') as csvfile:

@@ -22,5 +22,5 @@ class GraphManager(object):
 		self.canvas.drawRoute(self.routes[rid], 'red')
 
 	def routeSelected(self, rid):
-		
-		route = self.routes[rid]
+		print("GraphManager: Selected route %d."%(rid))
+		self.canvas.userBehavior(rid)
