@@ -3,6 +3,7 @@ from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 from matplotlib.figure import Figure
 import pickle
 import networkx as nx
+import re
 
 def TouchPairID(touch1, touch2):
 	if touch1.uid < touch2.uid:
@@ -47,35 +48,69 @@ class GraphCanvas(FigureCanvasKivyAgg):
 						d[0]['maxspeed'] = '50 mph'
 					ret  = re.findall(r'[0-9]+\.?[0-9]*',d[0]['maxspeed'])
 					if len(ret) == 0:
-						maxspeed = 50
+						maxspeedNum = 50
 					else:
-						maxspeed = float(ret[0])     
-					if 'highway' not in a:
-						d[0]['highway'] = 'unknown'
-					if d[0]['highway'] in highwayWeight[i]:
-						highway = highwayWeight[i][d[0]['highway']]
-					else:
-						highway = 0
-					maxspeed = maxspeedWeight[j]*maxspeed_num
-					weigetDict[(u, v, 0)] =  length*(1 + maxspeed + highway)
-				nx.set_edge_attributes(G, weigetDict, 'type%d'%(j*5+i))
+						maxspeedNum = float(ret[0])     
+					highway = 0 # default value
+					if 'highway' in a:
+						if isinstance(a['highway'], list):
+							a['highway'] = a['highway'][0]
+						if isinstance(a['highway'], str):
+							if a['highway'] in self.highwayWeight[i]:
+								highway = self.highwayWeight[i][a['highway']]
+					maxspeed = self.maxspeedWeight[j]*maxspeedNum
+					weigetDict[(u, v, 0)] =  length*(1 + maxspeed*0.5 + highway*0.5)
+				nx.set_edge_attributes(self.G, weigetDict, 'type%d'%(j*5+i))
 
-	def calculateRoutes(self,frm, to):
-		if isinstance(frm, tuple) and isinstance(to, tuple) :
+	@staticmethod
+	def GetBBox(frm, to):
+		north = max(frm[0], to[0])
+		south = min(frm[0], to[0])
+		east = max(frm[1], to[1])
+		west = min(frm[1], to[1])
+		return north, south, east, west
+
+	@staticmethod
+	def GetCenter(frm, to):
+		x = (frm[0] + to[0]) / 2
+		y = (frm[1] + to[1]) / 2
+		return (x, y)
+
+	def calculateRoutes(self, frm, to):
+		if isinstance(frm, tuple) and isinstance(to, tuple):
+			center = self.GetCenter(frm, to)
+			#north, south, east, west = self.GetBBox(frm, to)
+			try:
+				#self.G = ox.graph_from_bbox(north, south, east, west, truncate_by_edge=True)
+				self.G = ox.graph_from_point(center, truncate_by_edge=True)
+			except Exception as e:
+				print("GraphCanvas: Error when get graph.\n%s"%(str(e)))
+				return []
+			self.calculateWeight()
 			fromNode = ox.get_nearest_node(self.G, frm)
 			print("GraphCanvas: From nearest node {}.".format(fromNode))
 			toNode = ox.get_nearest_node(self.G, to)
 			print("GraphCanvas: To nearest node {}.".format(toNode))
 			routes = []
-			for i in range(0, 9):
+			for i in range(0, 10):
 				routes.append(nx.shortest_path(self.G, fromNode, toNode, weight='type%d'%(i)))
 			return routes
+		return []
+
+	def drawRoute(self, route, color):
+		"""
+		"""
+		self.figure, self.ax = ox.plot_graph_route(self.G, route, show=False, close=True, route_color=color)
+		self.draw_idle()
+		print(dir(self))
 
 	def drawRoutes(self, routes, color):
 		"""
 		"""
 		self.figure, self.ax = ox.plot_graph_routes(self.G, routes, show=False, close=True, route_color=color)
 		self.draw_idle()
+		self.size = (self.width, self.height)
+		print(dir(self))
 
 	def updateDistMap(self, touch):
 		for t in self.touches.values():
