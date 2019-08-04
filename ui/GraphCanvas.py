@@ -29,6 +29,10 @@ class GraphCanvas(FigureCanvasKivyAgg):
 		}
 		self.maxspeedWeight = {0:0.02, 1:-0.02}
 		try:
+			self.wayPreference,self.speedPreference,self.columsLen = self.behavioralLearning()
+		except:
+			self.columsLen = 0
+		try:
 			with open("graph.data", "rb") as f:
 				self.G = pickle.load(f)
 		except IOError:
@@ -52,7 +56,7 @@ class GraphCanvas(FigureCanvasKivyAgg):
 					if len(ret) == 0:
 						maxspeedNum = 50
 					else:
-						maxspeedNum = float(ret[0])     
+						maxspeedNum = float(ret[0])
 					highway = 0 # default value
 					if 'highway' in a:
 						if isinstance(a['highway'], list):
@@ -66,6 +70,33 @@ class GraphCanvas(FigureCanvasKivyAgg):
 						weight = 0
 					weigetDict[(u, v, 0)] = weight
 				nx.set_edge_attributes(self.G, weigetDict, 'type%d'%(j*5+i))
+
+		if self.columsLen > 10:
+				for edge in self.G.edges():
+					u, v = edge
+					d = ox.get_route_edge_attributes(self.G,[u,v],attribute = None,minimize_key ='length',retrieve_default = None)
+					length  = d[0]['length']
+					a = d[0]
+					if 'maxspeed' not in a:
+						d[0]['maxspeed'] = '50 mph'
+					ret  = re.findall(r'[0-9]+\.?[0-9]*',d[0]['maxspeed'])
+					if len(ret) == 0:
+						maxspeedNum = 50
+					else:
+						maxspeedNum = float(ret[0])
+					highway = 0 # default value
+					if 'highway' in a:
+						if isinstance(a['highway'], list):
+							a['highway'] = a['highway'][0]
+						if isinstance(a['highway'], str):
+							if a['highway'] in self.wayPreference:
+								highway = self.wayPreference[a['highway']]
+					maxspeed = self.speedPreference*maxspeedNum
+					weight = length*(1 + maxspeed*0.5 + highway*0.5)
+					if weight < 0:
+						weight = 0
+					weigetDict[(u, v, 0)] = weight
+				nx.set_edge_attributes(self.G, weigetDict, 'type10')
 
 	@staticmethod
 	def GetBBox(frm, to):
@@ -99,6 +130,8 @@ class GraphCanvas(FigureCanvasKivyAgg):
 			routes = []
 			for i in range(0, 10):
 				routes.append(nx.shortest_path(self.G, fromNode, toNode, weight='type%d'%(i)))
+			if self.columsLen >= 10:
+				routes.append(nx.shortest_path(self.G, fromNode, toNode, weight='type10'))
 			return routes
 		return []
 
@@ -209,26 +242,36 @@ class GraphCanvas(FigureCanvasKivyAgg):
 		super().on_touch_up(touch)
 		
 	def userBehavior(self, typeNum):
-		if typeNum <= 4:
-			highwayNum = typeNum
-			maxspeedNum = 0
+		if typeNum == 10:
+			with open('data.csv','a+', newline='') as f:
+				csv_write = csv.writer(f)
+				line = []
+				for k, v in self.wayPreference.items():
+					line.append(v)
+				line.append(self.speedPreference)
+				csv_write.writerow(line)
 		else:
-			highwayNum = typeNum%5
-			maxspeedNum = 1
-		with open('data.csv','a+', newline='') as f:
-			csv_write = csv.writer(f)
-			line = []
-			for k, v in self.highwayWeight[highwayNum].items():
-				line.append(v)
-			line.append(self.maxspeedWeight[maxspeedNum])
-			csv_write.writerow(line)
+			if typeNum <= 4:
+				highwayNum = typeNum
+				maxspeedNum = 0
+			else:
+				highwayNum = typeNum%5
+				maxspeedNum = 1
+			with open('data.csv','a+', newline='') as f:
+				csv_write = csv.writer(f)
+				line = []
+				for k, v in self.highwayWeight[highwayNum].items():
+					line.append(v)
+					line.append(self.maxspeedWeight[maxspeedNum])
+				csv_write.writerow(line)
 
 	def behavioralLearning(self):
 		with open('data.csv','r') as csvfile:
 			reader = csv.reader(csvfile)
 			data = [row for row in reader]
+			columsLen = len([colums[0] for colums in data])
+			wayWeight = {}
 			L = []
-
 			for i in range(0,8):
 				cols= [col[i] for col in data]
 				cols.remove(max(cols))
@@ -236,4 +279,8 @@ class GraphCanvas(FigureCanvasKivyAgg):
 				cols = list(map(float, cols))
 				avg = np.mean(cols)
 				L.append(avg)
-		return L
+		waytype = ['motorway','trunk','primary','secondary','tertiary','unclassified','residential']
+		for i in range(0, 7):
+			wayWeight[waytype[i]] = L[i]
+		speedWeight = L[7]
+		return wayWeight,speedWeight,columsLen
