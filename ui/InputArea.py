@@ -31,10 +31,6 @@ class InputArea(BoxLayout):
 		self.inputLayout.add_widget(toInput)
 		self.add_widget(self.inputLayout)
 
-		self.routeSpiner = Spinner(text="None")
-		self.routeSpiner.bind(text=self.previewRoute)
-		# self.add_widget(self.routeSpiner)
-
 		# Confirm button
 		self.confirmBtn = Button(text="Confirm", size_hint=(None, None), width=80)
 		self.confirmBtn.bind(on_press=self.fromToConfirmed)
@@ -54,29 +50,26 @@ class InputArea(BoxLayout):
 		tx = float(self.toXInput.text)
 		ty = float(self.toYInput.text)
 		routeNum = self.parent.graphManager.drawRouteByPos((fx,fy),(tx,ty))
+		self.previewNo = -1
+		self.routeBtnList = []
 		if routeNum == 0:
 			return
-		self.routeSpiner.text = "All"
-		self.routeSpiner.values = ["All"] + [str(x) for x in range(0, routeNum)]
 		self.remove_widget(self.inputLayout)
 		self.remove_widget(self.confirmBtn)
-		self.add_widget(self.routeSpiner)
+		for no in range(routeNum):
+			routeBtn = Button(text=str(no), size_hint=(None, None), width=30)
+			routeBtn.bind(on_press=self.previewRoute)
+			self.routeBtnList.append(routeBtn)
+			self.add_widget(routeBtn)
 		self.add_widget(self.selectBtn)
 
-	def previewRoute(self, instance, value):
-		if value in ["", "None", "All"]:
-			return
-		value = int(value)
+	def previewRoute(self, instance):
+		value = int(instance.text)
+		self.previewNo = value
 		self.parent.graphManager.drawRouteByID(value)
 
 	def routeSelected(self, instance):
-		value = self.routeSpiner.text
-		if value in ["", "None"]:
-			return
-		if value == "All":
-			self.parent.graphManager.drawRoute()
-			return
-		value = int(value)
+		value = self.previewNo
 		self.parent.graphManager.routeSelected(value)
 		self.remove_widget(self.routeSpiner)
 		self.remove_widget(self.selectBtn)

@@ -10,6 +10,7 @@ import networkx as nx
 
 class GraphManager(object):
 	def __init__(self):
+		self.routeColorMap = ["#FF4040", "#FF7F24", "#FFA500", "#FFFF00", "#9ACD32", "#00FF00", "#7FFFD4", "#00CED1", "#00BFFF"]
 		self.highwayWeight = {
 			0:{'motorway':1,'trunk':0.7,'primary':0.4,'secondary':0,'tertiary':-0.4,'unclassified':-0.7,'residential':-1},
 			1:{'motorway':-1,'trunk':-0.7,'primary':-0.4,'secondary':0,'tertiary':0.4,'unclassified':0.7,'residential':1},
@@ -26,18 +27,19 @@ class GraphManager(object):
 		self.canvas = WebCanvas()
 		self.routes = []
 
-	def drawRoute(self):
-		self.canvas.drawRoutes(self.G, self.routes, 'red')
+	def drawRoutes(self):
+		self.canvas.drawRoutes(self.G, self.routes, self.routeColorMap)
 
-	def drawRouteByPos(self,frm, to):
+	def drawRouteByPos(self, frm, to):
 		self.routes = self.calculateRoutes(frm, to)
 		if len(self.routes) > 0:
 			print("GraphManager: Find %d routes."%(len(self.routes)))
-			self.canvas.drawRoutes(self.G, self.routes, 'red')
+			self.canvas.drawRoutes(self.G, self.routes, self.routeColorMap)
 		return len(self.routes)
 
 	def drawRouteByID(self, rid):
-		self.canvas.drawRoute(self.G, self.routes[rid], 'red')
+		color = self.routeColorMap[rid%len(self.routeColorMap)]
+		self.canvas.drawRoute(self.G, self.routes[rid], color)
 
 	def routeSelected(self, rid):
 		print("GraphManager: Selected route %d."%(rid))
