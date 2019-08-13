@@ -12,5 +12,5 @@ class TestApp(App):
 		return self.mainLayout
 
 if __name__ == "__main__":
-	Config.set('kivy', 'keyboard_mode', 'systemandmulti')
+	# Config.set('kivy', 'keyboard_mode', 'systemandmulti')
 	TestApp().run()

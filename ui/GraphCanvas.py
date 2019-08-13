@@ -6,6 +6,7 @@ import pickle
 import networkx as nx
 import re
 import csv
+import numpy as np
 
 def TouchPairID(touch1, touch2):
 	if touch1.uid < touch2.uid:
