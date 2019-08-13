@@ -1,5 +1,5 @@
 from ui.GraphCanvas import GraphCanvas
-from ui.WebCanvas import WebCanvas
+# from ui.WebCanvas import WebCanvas
 import osmnx as ox
 import csv
 import re
@@ -14,9 +14,9 @@ class GraphManager(object):
 		self.highwayWeight = {
 			0:{'motorway':1,'trunk':0.7,'primary':0.4,'secondary':0,'tertiary':-0.4,'unclassified':-0.7,'residential':-1},
 			1:{'motorway':-1,'trunk':-0.7,'primary':-0.4,'secondary':0,'tertiary':0.4,'unclassified':0.7,'residential':1},
-			# 2:{'motorway':1,'trunk':0,'primary':-0.5,'secondary':-1,'tertiary':-0.5,'unclassified':0,'residential':1},
-			# 3:{'motorway':0.5,'trunk':0,'primary':-1,'secondary':-0.8,'tertiary':-0.6,'unclassified':0,'residential':0.5},
-			# 4:{'motorway':1,'trunk':0.5,'primary':-0.3,'secondary':-0.5,'tertiary':-1,'unclassified':-1,'residential':0}
+			2:{'motorway':1,'trunk':0,'primary':-0.5,'secondary':-1,'tertiary':-0.5,'unclassified':0,'residential':1},
+			3:{'motorway':0.5,'trunk':0,'primary':-1,'secondary':-0.8,'tertiary':-0.6,'unclassified':0,'residential':0.5},
+			4:{'motorway':1,'trunk':0.5,'primary':-0.3,'secondary':-0.5,'tertiary':-1,'unclassified':-1,'residential':0}
 		}
 		self.maxspeedWeight = {0:0.02, 1:-0.02}
 		try:
@@ -24,7 +24,7 @@ class GraphManager(object):
 		except:
 			self.columsLen = 0
 
-		self.canvas = WebCanvas()
+		self.canvas = GraphCanvas()
 		self.routes = []
 
 	def drawRoutes(self):
@@ -47,7 +47,7 @@ class GraphManager(object):
 
 	def calculateWeight(self):
 		weigetDict = {}
-		for i in range(0,2):
+		for i in range(0,5):
 			for j in range(0,2):
 				for edge in self.G.edges():
 					u, v = edge
