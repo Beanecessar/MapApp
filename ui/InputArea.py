@@ -37,7 +37,7 @@ class InputArea(BoxLayout):
 	def fromToConfirmed(self, instance):
 		if self.fromPlace.text == "" or self.toPlace.text == "":
 			return
-			
+
 		geolocator = Nominatim()
 
 		location = geolocator.geocode(self.fromPlace.text)
@@ -70,7 +70,8 @@ class InputArea(BoxLayout):
 	def routeSelected(self, instance):
 		value = self.previewNo
 		self.parent.graphManager.routeSelected(value)
-		self.remove_widget(self.routeSpiner)
+		for btn in self.routeBtnList:
+			self.remove_widget(btn)
 		self.remove_widget(self.selectBtn)
 		self.add_widget(self.backBtn)
 
