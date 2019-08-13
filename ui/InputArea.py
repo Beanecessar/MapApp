@@ -1,7 +1,9 @@
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
-from ui.FloatInput import FloatInput
+from kivy.uix.textinput import TextInput
+from geopy.geocoders import Nominatim
+#from ui.FloatInput import FloatInput
 from kivy.uix.spinner import Spinner
 
 class InputArea(BoxLayout):
@@ -9,26 +11,14 @@ class InputArea(BoxLayout):
 		super().__init__(size_hint=(1, None), height=100)
 		# Input layout
 		self.inputLayout = BoxLayout(orientation="vertical")
-		self.inputLayout.add_widget(Label(text="From", height=20))
-			# From
-		fromInput = BoxLayout(size_hint=(1, None), height=30)
-		fromInput.add_widget(Label(text="Latitude"))
-		self.fromXInput = FloatInput(text="39.90")
-		fromInput.add_widget(self.fromXInput)
-		fromInput.add_widget(Label(text="Longitude"))
-		self.fromYInput = FloatInput(text="116.40")
-		fromInput.add_widget(self.fromYInput)
-		self.inputLayout.add_widget(fromInput)
-		self.inputLayout.add_widget(Label(text="To", height=20))
-			# To
-		toInput = BoxLayout(size_hint=(1, None), height=30)
-		toInput.add_widget(Label(text="Latitude"))
-		self.toXInput = FloatInput(text="39.92")
-		toInput.add_widget(self.toXInput)
-		toInput.add_widget(Label(text="Longitude"))
-		self.toYInput = FloatInput(text="116.42")
-		toInput.add_widget(self.toYInput)
-		self.inputLayout.add_widget(toInput)
+			# Origin
+		self.inputLayout.add_widget(Label(text="Origin", height=20))
+		self.fromPlace = TextInput(text="")
+		self.inputLayout.add_widget(self.fromPlace)
+			# Destination
+		self.inputLayout.add_widget(Label(text="Destination", height=20))
+		self.toPlace = TextInput(text="")
+		self.inputLayout.add_widget(self.toPlace)
 		self.add_widget(self.inputLayout)
 
 		# Confirm button
@@ -45,10 +35,19 @@ class InputArea(BoxLayout):
 		self.backBtn.bind(on_press=self.clearRoute)
 
 	def fromToConfirmed(self, instance):
-		fx = float(self.fromXInput.text)
-		fy = float(self.fromYInput.text)
-		tx = float(self.toXInput.text)
-		ty = float(self.toYInput.text)
+		if self.fromPlace.text == "" or self.toPlace.text == "":
+			return
+			
+		geolocator = Nominatim()
+
+		location = geolocator.geocode(self.fromPlace.text)
+		fx = location.latitude
+		fy = location.longitude
+
+		location = geolocator.geocode(self.toPlace.text)
+		tx = location.latitude
+		ty = location.longitude
+
 		routeNum = self.parent.graphManager.drawRouteByPos((fx,fy),(tx,ty))
 		self.previewNo = -1
 		self.routeBtnList = []
