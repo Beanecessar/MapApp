@@ -21,120 +21,14 @@ class GraphCanvas(FigureCanvasKivyAgg):
 		self.touchCenter = [0, 0]
 		self.touchDistMap = {}
 		self.zoomCoeff = 1
-		self.highwayWeight = {
-			0:{'motorway':1,'trunk':0.7,'primary':0.4,'secondary':0,'tertiary':-0.4,'unclassified':-0.7,'residential':-1},
-			1:{'motorway':-1,'trunk':-0.7,'primary':-0.4,'secondary':0,'tertiary':0.4,'unclassified':0.7,'residential':1},
-			2:{'motorway':1,'trunk':0,'primary':-0.5,'secondary':-1,'tertiary':-0.5,'unclassified':0,'residential':1},
-			3:{'motorway':0.5,'trunk':0,'primary':-1,'secondary':-0.8,'tertiary':-0.6,'unclassified':0,'residential':0.5},
-			4:{'motorway':1,'trunk':0.5,'primary':-0.3,'secondary':-0.5,'tertiary':-1,'unclassified':-1,'residential':0}
-		}
-		self.maxspeedWeight = {0:0.02, 1:-0.02}
-		try:
-			self.wayPreference,self.speedPreference,self.columsLen = self.behavioralLearning()
-		except:
-			self.columsLen = 0
-		try:
-			with open("graph.data", "rb") as f:
-				self.G = pickle.load(f)
-		except IOError:
-			self.G = ox.graph_from_place('Modena, Italy', infrastructure='way["power"~"line"]')
-			with open("graph.data", "wb") as f:
-				pickle.dump(self.G, f)
-		self.figure, self.ax = ox.plot_graph(self.G, show=False, close=True)
-
-	def calculateWeight(self):
-		weigetDict = {}
-		for i in range(0,5):
-			for j in range(0,2):
-				for edge in self.G.edges():
-					u, v = edge
-					d = ox.get_route_edge_attributes(self.G,[u,v],attribute = None,minimize_key ='length',retrieve_default = None)
-					length  = d[0]['length']
-					a = d[0]
-					if 'maxspeed' not in a:
-						d[0]['maxspeed'] = '50 mph'
-					ret  = re.findall(r'[0-9]+\.?[0-9]*',d[0]['maxspeed'])
-					if len(ret) == 0:
-						maxspeedNum = 50
-					else:
-						maxspeedNum = float(ret[0])
-					highway = 0 # default value
-					if 'highway' in a:
-						if isinstance(a['highway'], list):
-							a['highway'] = a['highway'][0]
-						if isinstance(a['highway'], str):
-							if a['highway'] in self.highwayWeight[i]:
-								highway = self.highwayWeight[i][a['highway']]
-					maxspeed = self.maxspeedWeight[j]*maxspeedNum
-					weight = length*(1 + maxspeed*0.5 + highway*0.5)
-					if weight < 0:
-						weight = 0
-					weigetDict[(u, v, 0)] = weight
-				nx.set_edge_attributes(self.G, weigetDict, 'type%d'%(j*5+i))
-
-		if self.columsLen > 10:
-				for edge in self.G.edges():
-					u, v = edge
-					d = ox.get_route_edge_attributes(self.G,[u,v],attribute = None,minimize_key ='length',retrieve_default = None)
-					length  = d[0]['length']
-					a = d[0]
-					if 'maxspeed' not in a:
-						d[0]['maxspeed'] = '50 mph'
-					ret  = re.findall(r'[0-9]+\.?[0-9]*',d[0]['maxspeed'])
-					if len(ret) == 0:
-						maxspeedNum = 50
-					else:
-						maxspeedNum = float(ret[0])
-					highway = 0 # default value
-					if 'highway' in a:
-						if isinstance(a['highway'], list):
-							a['highway'] = a['highway'][0]
-						if isinstance(a['highway'], str):
-							if a['highway'] in self.wayPreference:
-								highway = self.wayPreference[a['highway']]
-					maxspeed = self.speedPreference*maxspeedNum
-					weight = length*(1 + maxspeed*0.5 + highway*0.5)
-					if weight < 0:
-						weight = 0
-					weigetDict[(u, v, 0)] = weight
-				nx.set_edge_attributes(self.G, weigetDict, 'type10')
-
-	@staticmethod
-	def GetBBox(frm, to):
-		north = max(frm[0], to[0])
-		south = min(frm[0], to[0])
-		east = max(frm[1], to[1])
-		west = min(frm[1], to[1])
-		return north, south, east, west
-
-	@staticmethod
-	def GetCenter(frm, to):
-		x = (frm[0] + to[0]) / 2
-		y = (frm[1] + to[1]) / 2
-		return (x, y)
-
-	def calculateRoutes(self, frm, to):
-		if isinstance(frm, tuple) and isinstance(to, tuple):
-			#center = self.GetCenter(frm, to)
-			north, south, east, west = self.GetBBox(frm, to)
-			try:
-				self.G = ox.graph_from_bbox(north, south, east, west, truncate_by_edge=True)
-				#self.G = ox.graph_from_point(center, truncate_by_edge=True)
-			except Exception as e:
-				print("GraphCanvas: Error when get graph.\n%s"%(str(e)))
-				return []
-			self.calculateWeight()
-			fromNode = ox.get_nearest_node(self.G, frm)
-			print("GraphCanvas: From nearest node {}.".format(fromNode))
-			toNode = ox.get_nearest_node(self.G, to)
-			print("GraphCanvas: To nearest node {}.".format(toNode))
-			routes = []
-			for i in range(0, 10):
-				routes.append(nx.shortest_path(self.G, fromNode, toNode, weight='type%d'%(i)))
-			if self.columsLen >= 10:
-				routes.append(nx.shortest_path(self.G, fromNode, toNode, weight='type10'))
-			return routes
-		return []
+		#try:
+		#	with open("graph.data", "rb") as f:
+		#		self.G = pickle.load(f)
+		#except IOError:
+		#	self.G = ox.graph_from_place('Modena, Italy', infrastructure='way["power"~"line"]')
+		#	with open("graph.data", "wb") as f:
+		#		pickle.dump(self.G, f)
+		#self.figure, self.ax = ox.plot_graph(self.G, show=False, close=True)
 
 	def refrashRect(self):
 		"""
@@ -147,17 +41,20 @@ class GraphCanvas(FigureCanvasKivyAgg):
 		elif Window.height >= 720:
 			Window.size = (480, 719)
 
-	def drawRoute(self, route, color):
+	def drawRoute(self, graph, route, color):
 		"""
 		"""
-		self.figure, self.ax = ox.plot_graph_route(self.G, route, show=False, close=True, route_color=color)
+		self.figure, self.ax = ox.plot_graph_route(graph, route, show=False, close=True, route_color=color)
 		self.draw()
 		self.refrashRect()
 
-	def drawRoutes(self, routes, color):
-		"""
-		"""
-		self.figure, self.ax = ox.plot_graph_routes(self.G, routes, show=False, close=True, route_color=color)
+	def drawRoutes(self, graph, routes, colors):
+		fmap = None
+		colors = ["#FF4040", "#FF7F24", "#FFA500", "#FFFF00", "#9ACD32", "#00FF00", "#7FFFD4", "#00CED1", "#00BFFF"]
+		for i in range(len(routes)):
+			fmap = ox.plot_route_folium(graph, routes[i], route_map=fmap, route_color=colors[i%len(colors)]+"AA")
+		fmap.save("map.html")
+		self.figure, self.ax = ox.plot_graph_routes(graph, routes, show=False, close=True, route_color=colors[0])
 		self.draw()
 		self.refrashRect()
 
@@ -242,46 +139,3 @@ class GraphCanvas(FigureCanvasKivyAgg):
 			print("GraphCanvas: on_touch_up at position: {}, {}".format(*touch.pos))
 		super().on_touch_up(touch)
 		
-	def userBehavior(self, typeNum):
-		if typeNum == 10:
-			with open('data.csv','a+', newline='') as f:
-				csv_write = csv.writer(f)
-				line = []
-				for k, v in self.wayPreference.items():
-					line.append(v)
-				line.append(self.speedPreference)
-				csv_write.writerow(line)
-		else:
-			if typeNum <= 4:
-				highwayNum = typeNum
-				maxspeedNum = 0
-			else:
-				highwayNum = typeNum%5
-				maxspeedNum = 1
-			with open('data.csv','a+', newline='') as f:
-				csv_write = csv.writer(f)
-				line = []
-				for k, v in self.highwayWeight[highwayNum].items():
-					line.append(v)
-					line.append(self.maxspeedWeight[maxspeedNum])
-				csv_write.writerow(line)
-
-	def behavioralLearning(self):
-		with open('data.csv','r') as csvfile:
-			reader = csv.reader(csvfile)
-			data = [row for row in reader]
-			columsLen = len([colums[0] for colums in data])
-			wayWeight = {}
-			L = []
-			for i in range(0,8):
-				cols= [col[i] for col in data]
-				cols.remove(max(cols))
-				cols.remove(min(cols))
-				cols = list(map(float, cols))
-				avg = np.mean(cols)
-				L.append(avg)
-		waytype = ['motorway','trunk','primary','secondary','tertiary','unclassified','residential']
-		for i in range(0, 7):
-			wayWeight[waytype[i]] = L[i]
-		speedWeight = L[7]
-		return wayWeight,speedWeight,columsLen
