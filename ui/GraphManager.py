@@ -14,9 +14,9 @@ class GraphManager(object):
 		self.highwayWeight = {
 			0:{'motorway':1,'trunk':0.7,'primary':0.4,'secondary':0,'tertiary':-0.4,'unclassified':-0.7,'residential':-1},
 			1:{'motorway':-1,'trunk':-0.7,'primary':-0.4,'secondary':0,'tertiary':0.4,'unclassified':0.7,'residential':1},
-			2:{'motorway':1,'trunk':0,'primary':-0.5,'secondary':-1,'tertiary':-0.5,'unclassified':0,'residential':1},
-			3:{'motorway':0.5,'trunk':0,'primary':-1,'secondary':-0.8,'tertiary':-0.6,'unclassified':0,'residential':0.5},
-			4:{'motorway':1,'trunk':0.5,'primary':-0.3,'secondary':-0.5,'tertiary':-1,'unclassified':-1,'residential':0}
+			# 2:{'motorway':1,'trunk':0,'primary':-0.5,'secondary':-1,'tertiary':-0.5,'unclassified':0,'residential':1},
+			# 3:{'motorway':0.5,'trunk':0,'primary':-1,'secondary':-0.8,'tertiary':-0.6,'unclassified':0,'residential':0.5},
+			# 4:{'motorway':1,'trunk':0.5,'primary':-0.3,'secondary':-0.5,'tertiary':-1,'unclassified':-1,'residential':0}
 		}
 		self.maxspeedWeight = {0:0.02, 1:-0.02}
 		try:
@@ -47,7 +47,7 @@ class GraphManager(object):
 
 	def calculateWeight(self):
 		weigetDict = {}
-		for i in range(0,5):
+		for i in range(0,2):
 			for j in range(0,2):
 				for edge in self.G.edges():
 					u, v = edge
@@ -73,7 +73,7 @@ class GraphManager(object):
 					if weight < 0:
 						weight = 0
 					weigetDict[(u, v, 0)] = weight
-				nx.set_edge_attributes(self.G, weigetDict, 'type%d'%(j*5+i))
+				nx.set_edge_attributes(self.G, weigetDict, 'type%d'%(j*2+i))
 	
 		if self.columsLen > 10:
 				for edge in self.G.edges():
@@ -132,7 +132,7 @@ class GraphManager(object):
 			toNode = ox.get_nearest_node(self.G, to)
 			print("GraphCanvas: To nearest node {}.".format(toNode))
 			routes = []
-			for i in range(10):
+			for i in range(4):
 				routes.append(nx.shortest_path(self.G, fromNode, toNode, weight='type%d'%(i)))
 			if self.columsLen >= 10:
 				routes.append(nx.shortest_path(self.G, fromNode, toNode, weight='type10'))
@@ -149,11 +149,11 @@ class GraphManager(object):
 				line.append(self.speedPreference)
 				csv_write.writerow(line)
 		else:
-			if typeNum <= 4:
+			if typeNum <= 1:
 				highwayNum = typeNum
 				maxspeedNum = 0
 			else:
-				highwayNum = typeNum%5
+				highwayNum = typeNum%2
 				maxspeedNum = 1
 			with open('data.csv','a+', newline='') as f:
 				csv_write = csv.writer(f)

@@ -40,13 +40,19 @@ class InputArea(BoxLayout):
 
 		geolocator = Nominatim()
 
-		location = geolocator.geocode(self.fromPlace.text)
-		fx = location.latitude
-		fy = location.longitude
+		try:
+			location = geolocator.geocode(self.fromPlace.text)
+			fx = location.latitude
+			fy = location.longitude
+		except:
+			return
 
-		location = geolocator.geocode(self.toPlace.text)
-		tx = location.latitude
-		ty = location.longitude
+		try:
+			location = geolocator.geocode(self.toPlace.text)
+			tx = location.latitude
+			ty = location.longitude
+		except:
+			return
 
 		routeNum = self.parent.graphManager.drawRouteByPos((fx,fy),(tx,ty))
 		self.previewNo = -1
