@@ -1,7 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
-
 from geopy.geocoders import Nominatim
-
 from ui.MapMainWindowUI import Ui_MapMainWindow
 from ui.MapWebView import MapWebView
 from logic.MapManager import MapManager
