@@ -47,6 +47,7 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 			except:
 				tryCount -= 1
 			else:
+				print(orix, oriy, desx, desy)
 				routeNum = self.mapManager.drawRouteByPos((orix,oriy),(desx,desy))
 				self.buildRouteArea(routeNum)
 				self.originInput.clear()
