@@ -33,7 +33,7 @@ class MapManager(object):
 		if len(self.routes) > 0:
 			print("MapManager: Find %d routes."%(len(self.routes)))
 			self.canvas.drawRoutes(self.G, self.routes, self.routeColorMap)
-		return len(self.routes)
+		return [route.getLength() for route in self.routes]
 
 	def drawRouteByID(self, rid):
 		color = self.routeColorMap[rid%len(self.routeColorMap)]

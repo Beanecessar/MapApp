@@ -47,9 +47,8 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 			except:
 				tryCount -= 1
 			else:
-				print(orix, oriy, desx, desy)
-				routeNum = self.mapManager.drawRouteByPos((orix,oriy),(desx,desy))
-				self.buildRouteArea(routeNum)
+				routeLens = self.mapManager.drawRouteByPos((orix,oriy),(desx,desy))
+				self.buildRouteArea(routeLens)
 				self.originInput.clear()
 				self.destInput.clear()
 				self.placeArea.setVisible(False)
@@ -77,9 +76,10 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 		self.placeArea.setVisible(True)
 		self.backArea.setVisible(False)
 
-	def buildRouteArea(self, routeNum):
+	def buildRouteArea(self, routeLens):
 		for i in range(9):
-			if i < routeNum:
+			if i < len(routeLens):
 				getattr(self, "route"+str(i)).setVisible(True)
+				getattr(self, "route"+str(i)).setText("Route{}({})".format(i, routeLens[i]))
 			else:
 				getattr(self, "route"+str(i)).setVisible(False)
