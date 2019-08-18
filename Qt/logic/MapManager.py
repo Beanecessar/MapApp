@@ -52,7 +52,7 @@ class MapManager(object):
 					d = ox.get_route_edge_attributes(self.G,[u,v],attribute = None,minimize_key ='length',retrieve_default = None)
 					length  = d[0]['length']
 					a = d[0]
-					if 'maxspeed' not in a or not isinstance(a, [str, bytes]):
+					if 'maxspeed' not in a or not isinstance(a, (str, bytes):
 						a['maxspeed'] = '50 mph'
 					ret  = re.findall(r'[0-9]+\.?[0-9]*',a['maxspeed'])
 					if len(ret) == 0:
