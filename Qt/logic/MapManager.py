@@ -1,5 +1,3 @@
-from ui.GraphCanvas import GraphCanvas
-# from ui.WebCanvas import WebCanvas
 import osmnx as ox
 import csv
 import re
@@ -8,8 +6,8 @@ import networkx as nx
 # import matplotlib.pyplot as plt
 # import matplotlib.image as mpimg
 
-class GraphManager(object):
-	def __init__(self):
+class MapManager(object):
+	def __init__(self, canvas):
 		self.routeColorMap = ["#FF4040", "#FF7F24", "#FFA500", "#FFFF00", "#9ACD32", "#00FF00", "#7FFFD4", "#00CED1", "#00BFFF"]
 		self.highwayWeight = {
 			0:{'motorway':1,'trunk':0.7,'primary':0.4,'secondary':0,'tertiary':-0.4,'unclassified':-0.7,'residential':-1},
@@ -24,7 +22,7 @@ class GraphManager(object):
 		except:
 			self.columsLen = 0
 
-		self.canvas = GraphCanvas()
+		self.canvas = canvas
 		self.routes = []
 
 	def drawRoutes(self):
@@ -33,7 +31,7 @@ class GraphManager(object):
 	def drawRouteByPos(self, frm, to):
 		self.routes = self.calculateRoutes(frm, to)
 		if len(self.routes) > 0:
-			print("GraphManager: Find %d routes."%(len(self.routes)))
+			print("MapManager: Find %d routes."%(len(self.routes)))
 			self.canvas.drawRoutes(self.G, self.routes, self.routeColorMap)
 		return len(self.routes)
 
@@ -42,7 +40,7 @@ class GraphManager(object):
 		self.canvas.drawRoute(self.G, self.routes[rid], color)
 
 	def routeSelected(self, rid):
-		print("GraphManager: Selected route %d."%(rid))
+		print("MapManager: Selected route %d."%(rid))
 		self.userBehavior(rid)
 
 	def calculateWeight(self):
@@ -124,7 +122,7 @@ class GraphManager(object):
 				self.G = ox.graph_from_bbox(north, south, east, west, truncate_by_edge=True)
 				#self.G = ox.graph_from_point(center, truncate_by_edge=True)
 			except Exception as e:
-				print("GraphManager: Error when get graph.\n%s"%(str(e)))
+				print("MapManager: Error when get graph.\n%s"%(str(e)))
 				return []
 			self.calculateWeight()
 			fromNode = ox.get_nearest_node(self.G, frm)
