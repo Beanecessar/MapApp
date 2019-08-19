@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/MapMainWindow.ui'
+# Form implementation generated from reading ui file 'MapMainWindow.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.0
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_MapMainWindow(object):
 	def setupUi(self, MapMainWindow):
@@ -18,6 +16,28 @@ class Ui_MapMainWindow(object):
 		self.centralwidget.setObjectName("centralwidget")
 		self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
 		self.verticalLayout.setObjectName("verticalLayout")
+		self.localArea = QtWidgets.QWidget(self.centralwidget)
+		sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+		sizePolicy.setHorizontalStretch(0)
+		sizePolicy.setVerticalStretch(0)
+		sizePolicy.setHeightForWidth(self.localArea.sizePolicy().hasHeightForWidth())
+		self.localArea.setSizePolicy(sizePolicy)
+		self.localArea.setObjectName("localArea")
+		self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.localArea)
+		self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+		self.countryLabel = QtWidgets.QLabel(self.localArea)
+		self.countryLabel.setObjectName("countryLabel")
+		self.horizontalLayout_2.addWidget(self.countryLabel)
+		self.cityLabel = QtWidgets.QLabel(self.localArea)
+		self.cityLabel.setObjectName("cityLabel")
+		self.horizontalLayout_2.addWidget(self.cityLabel)
+		self.latitudeLabel = QtWidgets.QLabel(self.localArea)
+		self.latitudeLabel.setObjectName("latitudeLabel")
+		self.horizontalLayout_2.addWidget(self.latitudeLabel)
+		self.longitudeLabel = QtWidgets.QLabel(self.localArea)
+		self.longitudeLabel.setObjectName("longitudeLabel")
+		self.horizontalLayout_2.addWidget(self.longitudeLabel)
+		self.verticalLayout.addWidget(self.localArea)
 		self.displayArea = QtWidgets.QWidget(self.centralwidget)
 		self.displayArea.setObjectName("displayArea")
 		self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.displayArea)
@@ -144,6 +164,10 @@ class Ui_MapMainWindow(object):
 	def retranslateUi(self, MapMainWindow):
 		_translate = QtCore.QCoreApplication.translate
 		MapMainWindow.setWindowTitle(_translate("MapMainWindow", "MainWindow"))
+		self.countryLabel.setText(_translate("MapMainWindow", "Country:"))
+		self.cityLabel.setText(_translate("MapMainWindow", "City:"))
+		self.latitudeLabel.setText(_translate("MapMainWindow", "Latitude:"))
+		self.longitudeLabel.setText(_translate("MapMainWindow", "Longitude:"))
 		self.route0.setText(_translate("MapMainWindow", "Route1"))
 		self.route4.setText(_translate("MapMainWindow", "Route5"))
 		self.route1.setText(_translate("MapMainWindow", "Route2"))
@@ -162,3 +186,4 @@ class Ui_MapMainWindow(object):
 		self.cfmPlaceBtn.setText(_translate("MapMainWindow", "&Confirm"))
 		self.clrPlaceBtn.setText(_translate("MapMainWindow", "&Clear"))
 		self.menu_Menu.setTitle(_translate("MapMainWindow", "&Menu"))
+

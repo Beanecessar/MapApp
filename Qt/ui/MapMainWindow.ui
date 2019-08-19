@@ -16,6 +16,46 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
+     <widget class="QWidget" name="localArea" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="countryLabel">
+         <property name="text">
+          <string>Country:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="cityLabel">
+         <property name="text">
+          <string>City:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="latitudeLabel">
+         <property name="text">
+          <string>Latitude:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="longitudeLabel">
+         <property name="text">
+          <string>Longitude:</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
      <widget class="QWidget" name="displayArea" native="true">
       <layout class="QVBoxLayout" name="verticalLayout_2"/>
      </widget>

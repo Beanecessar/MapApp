@@ -3,11 +3,17 @@ from geopy.geocoders import Nominatim
 from ui.MapMainWindowUI import Ui_MapMainWindow
 from ui.MapWebView import MapWebView
 from logic.MapManager import MapManager
+from logic.LocalInfo import LocalInfo
 
 class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 	def __init__(self):
 		super().__init__()
 		self.setupUi(self)
+		self.localInfo = LocalInfo()
+		self.countryLabel.setText("Country: {}".format(self.localInfo.countryName))
+		self.cityLabel.setText("City: {}".format(self.localInfo.cityName))
+		self.latitudeLabel.setText("Latitude: {}".format(self.localInfo.latitude))
+		self.longitudeLabel.setText("Longitude: {}".format(self.localInfo.longitude))
 		self.selectedRoute = None
 		self.webView = MapWebView(self.displayArea)
 		self.displayArea.layout().addWidget(self.webView)
@@ -35,11 +41,17 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 		tryCount = 10
 		while tryCount > 0:
 			try:
-				location = geolocator.geocode(oriPlace)
+				location = geolocator.geocode(oriPlace)#, exactly_one=False)
+				if location is None:
+					QMessageBox.information(self, "Error", "Invaild input place. Please check spelling.")
+					return
 				orix = location.latitude
 				oriy = location.longitude
 		
-				location = geolocator.geocode(destPlace)
+				location = geolocator.geocode(destPlace)#, exactly_one=False)
+				if location is None:
+					QMessageBox.information(self, "Error", "Invaild input place. Please check spelling.")
+					return
 				desx = location.latitude
 				desy = location.longitude
 			except:
