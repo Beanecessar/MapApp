@@ -2,6 +2,11 @@ import osmnx as ox
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 from kivy.core.window import Window
 from matplotlib.figure import Figure
+import pickle
+import networkx as nx
+import re
+import csv
+import numpy as np
 
 def TouchPairID(touch1, touch2):
 	if touch1.uid < touch2.uid:
@@ -44,11 +49,6 @@ class GraphCanvas(FigureCanvasKivyAgg):
 		self.refrashRect()
 
 	def drawRoutes(self, graph, routes, colors):
-		fmap = None
-		colors = ["#FF4040", "#FF7F24", "#FFA500", "#FFFF00", "#9ACD32", "#00FF00", "#7FFFD4", "#00CED1", "#00BFFF"]
-		for i in range(len(routes)):
-			fmap = ox.plot_route_folium(graph, routes[i], route_map=fmap, route_color=colors[i%len(colors)]+"AA")
-		fmap.save("map.html")
 		self.figure, self.ax = ox.plot_graph_routes(graph, routes, show=False, close=True, route_color=colors[0])
 		self.draw()
 		self.refrashRect()
