@@ -18,12 +18,14 @@ class MapWebView(QWebEngineView):
 			self.load(QUrl.fromLocalFile(TEMP_PATH+"map.html"))
 
 	def drawRoute(self, graph, route, color):
+		print("MapWebView: draw route.")
 		fmap = ox.plot_route_folium(graph, route, route_color=color)
 		fmap.save(TEMP_PATH+"map.html")
 		#self.load(QUrl("file:///"+TEMP_PATH+"map.html"))
 		self.load(QUrl.fromLocalFile(TEMP_PATH+"map.html"))
 
 	def drawRoutes(self, graph, routes, colors):
+		print("MapWebView: draw routes.")
 		fmap = None
 		for i in range(len(routes)):
 			fmap = ox.plot_route_folium(graph, routes[i], route_map=fmap, route_color=colors[i%len(colors)]+"AA")

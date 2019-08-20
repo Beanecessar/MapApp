@@ -25,8 +25,8 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 	def _connect(self):
 		self.cfmPlaceBtn.clicked.connect(self.onConfirmPlace)
 		for i in range(9):
-			getattr(self, "route"+str(i)).clicked.connect(lambda index=i: self.onPreviewRoute)
-		self.allroute.clicked.connect(lambda: self.mapManager.drawRoutes)
+			getattr(self, "route"+str(i)).clicked.connect(lambda *arg,index=i: self.onPreviewRoute(index))
+		self.allroute.clicked.connect(self.mapManager.drawRoutes)
 		self.cfmRouteBtn.clicked.connect(self.onConfirmRoute)
 		self.cclRouteBtn.clicked.connect(self.onCancelRoute)
 		self.backBtn.clicked.connect(self.onBackClicked)
@@ -68,6 +68,7 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 		QMessageBox.information(self, "Error", "Fail to locate the input place due to networking problems. Please retry.")
 
 	def onPreviewRoute(self, rid):
+		print("onPreviewRoute", rid)
 		self.selectedRoute = rid
 		self.mapManager.drawRouteByID(rid)
 
