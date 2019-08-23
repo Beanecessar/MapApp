@@ -2,7 +2,7 @@ import geoip2.database
 import urllib.request
 import re
 
-reader = geoip2.database.Reader("GeoLite2-City/GeoLite2-City.mmdb")
+reader = geoip2.database.Reader("C:/Users/Alliance/Documents/GitHub/MapApp/Qt/GeoLite2-City/GeoLite2-City.mmdb")
 
 class LocalInfo(object):
 	def __init__(self):
