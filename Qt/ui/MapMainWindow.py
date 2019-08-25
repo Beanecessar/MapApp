@@ -4,6 +4,7 @@ from ui.MapMainWindowUI import Ui_MapMainWindow
 from ui.MapWebView import MapWebView
 from logic.MapManager import MapManager
 from logic.LocalInfo import LocalInfo
+import math
 
 class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 	def __init__(self):
@@ -42,25 +43,31 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 		print("Start encode the input place.")
 		while tryCount > 0:
 			try:
-				location = geolocator.geocode(oriPlace)#, exactly_one=False)
-				if location is None:
+				locations = geolocator.geocode(oriPlace, exactly_one=False)
+				if locations is None or locations == []:
 					QMessageBox.information(self, "Error", "Invaild input place. Please check spelling.")
 					return
-				orix = location.latitude
-				oriy = location.longitude
+				locations.sort(key = lambda elem: math.pow((elem.latitude - self.localInfo.latitude), 2) + math.pow((elem.longitude - self.localInfo.longitude), 2))
+				orix = locations[0].latitude
+				oriy = locations[0].longitude
 		
-				location = geolocator.geocode(destPlace)#, exactly_one=False)
-				if location is None:
+				locations = geolocator.geocode(destPlace, exactly_one=False)
+				if locations is None or locations == []:
 					QMessageBox.information(self, "Error", "Invaild input place. Please check spelling.")
 					return
-				desx = location.latitude
-				desy = location.longitude
+				locations.sort(key = lambda elem: math.pow((elem.latitude - self.localInfo.latitude), 2) + math.pow((elem.longitude - self.localInfo.longitude), 2))
+				desx = locations[0].latitude
+				desy = locations[0].longitude
 			except:
 				tryCount -= 1
 			else:
 				print("Encode the input place over.")
 				print("Start calculate routes.")
+<<<<<<< HEAD
 				if (desx - orix)*(desx - orix) + (desy - oriy)*(desy - oriy) > 25:
+=======
+				if (desx - orix)*(desx - orix) + (desy - oriy)*(desy - oriy) > 4:
+>>>>>>> b2b6f541e660ce6b57d2135b4df50a9fd7adba54
 					QMessageBox.critical(self, "Error", "Too far from origin to destination. From: {} To: {}".format((orix,oriy),(desx,desy)))
 				routeLens = self.mapManager.drawRouteByPos((orix,oriy),(desx,desy))
 				print("Calculate routes over.")
