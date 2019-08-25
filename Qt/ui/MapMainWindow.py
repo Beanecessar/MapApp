@@ -63,11 +63,7 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 			else:
 				print("Encode the input place over.")
 				print("Start calculate routes.")
-<<<<<<< HEAD
-				if (desx - orix)*(desx - orix) + (desy - oriy)*(desy - oriy) > 25:
-=======
 				if (desx - orix)*(desx - orix) + (desy - oriy)*(desy - oriy) > 4:
->>>>>>> b2b6f541e660ce6b57d2135b4df50a9fd7adba54
 					QMessageBox.critical(self, "Error", "Too far from origin to destination. From: {} To: {}".format((orix,oriy),(desx,desy)))
 				routeLens = self.mapManager.drawRouteByPos((orix,oriy),(desx,desy))
 				print("Calculate routes over.")
