@@ -58,7 +58,7 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 				tryCount -= 1
 			else:
 				routeLens = self.mapManager.drawRouteByPos((orix,oriy),(desx,desy))
-				if routeLens == 0:
+				if len(routeLens) == 0:
 					QMessageBox.critical(self, "Error", "Fail to find valid path.")
 					return
 				self.buildRouteArea(routeLens)
