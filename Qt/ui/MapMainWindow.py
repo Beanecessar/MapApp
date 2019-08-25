@@ -39,6 +39,7 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 
 		geolocator = Nominatim()
 		tryCount = 10
+		print("Start encode the input place.")
 		while tryCount > 0:
 			try:
 				location = geolocator.geocode(oriPlace)#, exactly_one=False)
@@ -57,7 +58,10 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 			except:
 				tryCount -= 1
 			else:
+				print("Encode the input place over.")
+				print("Start calculate routes.")
 				routeLens = self.mapManager.drawRouteByPos((orix,oriy),(desx,desy))
+				print("Calculate routes over.")
 				if len(routeLens) == 0:
 					QMessageBox.critical(self, "Error", "Fail to find valid path.")
 					return
