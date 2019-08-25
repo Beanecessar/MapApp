@@ -102,10 +102,10 @@ class MapManager(object):
 
 	@staticmethod
 	def GetBBox(frm, to):
-		north = max(frm[0], to[0])
-		south = min(frm[0], to[0])
-		east = max(frm[1], to[1])
-		west = min(frm[1], to[1])
+		north = max(frm[0], to[0])+0.001
+		south = min(frm[0], to[0])-0.001
+		east = max(frm[1], to[1])+0.001
+		west = min(frm[1], to[1])-0.001
 		return north, south, east, west
 
 	@staticmethod
