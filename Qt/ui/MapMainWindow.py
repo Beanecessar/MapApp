@@ -66,7 +66,6 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 				self.destInput.clear()
 				self.placeArea.setVisible(False)
 				self.routeArea.setVisible(True)
-				self.mapManager.drawRoutes()
 				return
 		QMessageBox.information(self, "Error", "Fail to locate the input place due to networking problems. Please retry.")
 
@@ -94,6 +93,6 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 		for i in range(9):
 			if i < len(routeLens):
 				getattr(self, "route"+str(i)).setVisible(True)
-				getattr(self, "route"+str(i)).setText("Route{}({})".format(i, routeLens[i]))
+				getattr(self, "route"+str(i)).setText("Route{}({}km)".format(i, round(routeLens[i]/1000.0, 2)))
 			else:
 				getattr(self, "route"+str(i)).setVisible(False)
