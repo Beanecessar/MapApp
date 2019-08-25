@@ -130,11 +130,14 @@ class MapManager(object):
 			toNode = ox.get_nearest_node(self.G, to)
 			print("GraphCanvas: To nearest node {}.".format(toNode))
 			routes = []
-			for i in range(10):
-				routes.append(nx.shortest_path(self.G, fromNode, toNode, weight='type%d'%(i)))
-			if self.columsLen >= 10:
-				routes.append(nx.shortest_path(self.G, fromNode, toNode, weight='type10'))
-			return routes
+			try:
+				for i in range(10):
+					routes.append(nx.shortest_path(self.G, fromNode, toNode, weight='type%d'%(i)))
+				if self.columsLen >= 10:
+					routes.append(nx.shortest_path(self.G, fromNode, toNode, weight='type10'))
+				return routes
+			except:
+				pass
 		return []
 
 	def userBehavior(self, typeNum):
