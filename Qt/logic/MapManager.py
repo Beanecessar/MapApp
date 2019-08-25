@@ -115,6 +115,7 @@ class MapManager(object):
 		return (x, y)
 
 	def calculateRoutes(self, frm, to):
+		print("Calculate routes from {} to {}".format(frm, to))
 		if isinstance(frm, tuple) and isinstance(to, tuple):
 			#center = self.GetCenter(frm, to)
 			north, south, east, west = self.GetBBox(frm, to)
