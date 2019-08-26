@@ -127,7 +127,7 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 					print("Not equal.")
 			if isUnique:
 				routeLen = self.mapManager.getRouteLength(routes[i])
-				getattr(self, "route"+str(count)).routeNum = count
+				getattr(self, "route"+str(count)).routeNum = i
 				getattr(self, "route"+str(count)).setVisible(True)
 				getattr(self, "route"+str(count)).setText("Route{}({}km)".format(count, round(routeLen/1000.0, 2)))
 				count += 1
