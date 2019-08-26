@@ -28,6 +28,7 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 		self.cfmPlaceBtn.clicked.connect(self.onConfirmPlace)
 		for i in range(10):
 			getattr(self, "route"+str(i)).clicked.connect(lambda *arg,btn=getattr(self, "route"+str(i)): self.onPreviewRoute(btn))
+		self.sugRouteBtn.clicked.connect(lambda *arg,btn=self.sugRouteBtn: self.onPreviewRoute(btn))
 		self.allroute.clicked.connect(self.mapManager.drawRoutes)
 		self.cfmRouteBtn.clicked.connect(self.onConfirmRoute)
 		self.cclRouteBtn.clicked.connect(self.onCancelRoute)
@@ -113,6 +114,8 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 	def buildRouteArea(self, routes):
 		count = 0
 		for i in range(len(routes)):
+			if i == 10:
+				break
 			isUnique = True
 			for j in range(i):
 				print("Compare routes {} with routes {}.".format(i, j))
@@ -128,5 +131,12 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 				getattr(self, "route"+str(count)).setVisible(True)
 				getattr(self, "route"+str(count)).setText("Route{}({}km)".format(count, round(routeLen/1000.0, 2)))
 				count += 1
+		if len(routes) == 11:
+			routeLen = self.mapManager.getRouteLength(routes[-1])
+			self.sugRouteBtn.routeNum = 10
+			self.sugRouteBtn.setVisible(True)
+			setText("  Perferred ({}km)  ".format(count, round(routeLen/1000.0, 2)))
+		else:
+			self.sugRouteBtn.setVisible(False)
 		for i in range(count, 10):
 			getattr(self, "route"+str(i)).setVisible(False)
