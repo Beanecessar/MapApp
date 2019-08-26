@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'MapMainWindow.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MapMainWindow(object):
 	def setupUi(self, MapMainWindow):
@@ -96,6 +98,9 @@ class Ui_MapMainWindow(object):
 		self.verticalLayout_7.addLayout(self.routeInput)
 		self.horizontalLayout = QtWidgets.QHBoxLayout()
 		self.horizontalLayout.setObjectName("horizontalLayout")
+		self.sugRouteBtn = QtWidgets.QPushButton(self.routeArea)
+		self.sugRouteBtn.setObjectName("sugRouteBtn")
+		self.horizontalLayout.addWidget(self.sugRouteBtn)
 		self.allroute = QtWidgets.QPushButton(self.routeArea)
 		self.allroute.setObjectName("allroute")
 		self.horizontalLayout.addWidget(self.allroute)
@@ -185,6 +190,7 @@ class Ui_MapMainWindow(object):
 		self.route8.setText(_translate("MapMainWindow", "Route9"))
 		self.route6.setText(_translate("MapMainWindow", "Route7"))
 		self.route9.setText(_translate("MapMainWindow", "Route10"))
+		self.sugRouteBtn.setText(_translate("MapMainWindow", "   Perferred Route   "))
 		self.allroute.setText(_translate("MapMainWindow", "    AllRoute    "))
 		self.cfmRouteBtn.setText(_translate("MapMainWindow", "&Confirm"))
 		self.cclRouteBtn.setText(_translate("MapMainWindow", "&Cancel"))
@@ -194,4 +200,3 @@ class Ui_MapMainWindow(object):
 		self.cfmPlaceBtn.setText(_translate("MapMainWindow", "&Confirm"))
 		self.clrPlaceBtn.setText(_translate("MapMainWindow", "&Clear"))
 		self.menu_Menu.setTitle(_translate("MapMainWindow", "&Menu"))
-

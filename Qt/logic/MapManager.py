@@ -40,7 +40,7 @@ class MapManager(object):
 
 	def drawRouteByID(self, rid):
 		color = self.routeColorMap[rid%len(self.routeColorMap)]
-		print("Draw route {}".format(self.routes[rid]))
+		print("Draw route {} {}".format(rid, self.routes[rid]))
 		self.canvas.drawRoute(self.G, self.routes[rid], color)
 
 	def routeSelected(self, rid):

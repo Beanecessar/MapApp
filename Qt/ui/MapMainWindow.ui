@@ -168,6 +168,13 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
+             <widget class="QPushButton" name="sugRouteBtn">
+              <property name="text">
+               <string>   Perferred Route   </string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QPushButton" name="allroute">
               <property name="text">
                <string>    AllRoute    </string>
