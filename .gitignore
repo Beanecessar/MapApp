@@ -3,3 +3,6 @@
 graph.data
 *.csv
 Qt/.vs/Qt/v15/.suo
+.vscode
+debug.log
+map.html

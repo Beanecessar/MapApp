@@ -8,7 +8,7 @@ import networkx as nx
 
 class MapManager(object):
 	def __init__(self, canvas):
-		self.routeColorMap = ["#FF4040", "#FF7F24", "#FFA500", "#FFFF00", "#9ACD32", "#00FF00", "#7FFFD4", "#00CED1", "#00BFFF"]
+		self.routeColorMap = ["#FF4040", "#FF7F24", "#FFA500", "#FFFF00", "#9ACD32", "#00FF00", "#7FFFD4", "#00CED1", "#00BFFF", "#4F2F4F"]
 		self.highwayWeight = {
 			0:{'motorway':1,'trunk':0.7,'primary':0.4,'secondary':0,'tertiary':-0.4,'unclassified':-0.7,'residential':-1},
 			1:{'motorway':-1,'trunk':-0.7,'primary':-0.4,'secondary':0,'tertiary':0.4,'unclassified':0.7,'residential':1},
@@ -25,15 +25,18 @@ class MapManager(object):
 		self.canvas = canvas
 		self.routes = []
 
+	def getRouteLength(self, route):
+		return round(sum(ox.get_route_edge_attributes(self.G,route,attribute = 'length',minimize_key ='length',retrieve_default = None)), 3)
+
 	def drawRoutes(self):
 		self.canvas.drawRoutes(self.G, self.routes, self.routeColorMap)
 
-	def drawRouteByPos(self, frm, to):
-		self.routes = self.calculateRoutes(frm, to)
+	def drawRouteByPos(self, frm, to, progress=None):
+		self.routes = self.calculateRoutes(frm, to, progress)
 		if len(self.routes) > 0:
 			print("MapManager: Find %d routes."%(len(self.routes)))
 			self.canvas.drawRoutes(self.G, self.routes, self.routeColorMap)
-		return [round(sum(ox.get_route_edge_attributes(self.G,route,attribute = 'length',minimize_key ='length',retrieve_default = None)), 3) for route in self.routes]
+		return self.routes
 
 	def drawRouteByID(self, rid):
 		color = self.routeColorMap[rid%len(self.routeColorMap)]
@@ -114,7 +117,7 @@ class MapManager(object):
 		y = (frm[1] + to[1]) / 2
 		return (x, y)
 
-	def calculateRoutes(self, frm, to):
+	def calculateRoutes(self, frm, to, progress=None):
 		print("Calculate routes from {} to {}".format(frm, to))
 		if isinstance(frm, tuple) and isinstance(to, tuple):
 			#center = self.GetCenter(frm, to)
@@ -133,6 +136,8 @@ class MapManager(object):
 			routes = []
 			try:
 				for i in range(10):
+					if progress:
+						progress.setValue(60+i*2)
 					routes.append(nx.shortest_path(self.G, fromNode, toNode, weight='type%d'%(i)))
 				if self.columsLen >= 10:
 					routes.append(nx.shortest_path(self.G, fromNode, toNode, weight='type10'))
