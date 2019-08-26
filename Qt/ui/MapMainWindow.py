@@ -135,7 +135,7 @@ class MapMainWindow(QMainWindow, Ui_MapMainWindow):
 			routeLen = self.mapManager.getRouteLength(routes[-1])
 			self.sugRouteBtn.routeNum = 10
 			self.sugRouteBtn.setVisible(True)
-			setText("  Perferred ({}km)  ".format(count, round(routeLen/1000.0, 2)))
+			self.sugRouteBtn.setText("  Perferred ({}km)  ".format(count, round(routeLen/1000.0, 2)))
 		else:
 			self.sugRouteBtn.setVisible(False)
 		for i in range(count, 10):

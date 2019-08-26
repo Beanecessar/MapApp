@@ -2,6 +2,7 @@ import osmnx as ox
 import csv
 import re
 import networkx as nx
+import numpy as np
 
 # import matplotlib.pyplot as plt
 # import matplotlib.image as mpimg
@@ -19,8 +20,11 @@ class MapManager(object):
 		self.maxspeedWeight = {0:0.02, 1:-0.02}
 		try:
 			self.wayPreference,self.speedPreference,self.columsLen = self.behavioralLearning()
-		except:
+			print('1')
+		except: 
 			self.columsLen = 0
+			import traceback
+			traceback.print_exc()
 
 		self.canvas = canvas
 		self.routes = []
