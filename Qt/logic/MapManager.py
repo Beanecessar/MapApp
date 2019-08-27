@@ -14,9 +14,10 @@ class MapManager(object):
 			0:{'motorway':1,'trunk':0.7,'primary':0.4,'secondary':0,'tertiary':-0.4,'unclassified':-0.7,'residential':-1},
 			1:{'motorway':-1,'trunk':-0.7,'primary':-0.4,'secondary':0,'tertiary':0.4,'unclassified':0.7,'residential':1},
 			2:{'motorway':1,'trunk':0,'primary':-0.5,'secondary':-1,'tertiary':-0.5,'unclassified':0,'residential':1},
-			3:{'motorway':0.5,'trunk':0,'primary':-1,'secondary':-0.8,'tertiary':-0.6,'unclassified':0,'residential':0.5},
-			4:{'motorway':1,'trunk':0.5,'primary':-0.3,'secondary':-0.5,'tertiary':-1,'unclassified':-1,'residential':0}
+			3:{'motorway':1,'trunk':0,'primary':-1,'secondary':-0.8,'tertiary':-0.6,'unclassified':-0.4,'residential':0},
+			4:{'motorway':0,'trunk':0,'primary':0,'secondary':0,'tertiary':0,'unclassified':0,'residential':0}
 		}
+
 		self.maxspeedWeight = {0:0.02, 1:-0.02}
 		try:
 			self.wayPreference,self.speedPreference,self.columsLen = self.behavioralLearning()
